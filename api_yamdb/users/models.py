@@ -3,7 +3,7 @@ from django.contrib.auth.models import AbstractUser
 
 
 class User(AbstractUser):
-    class UserRole:
+    class Role:
         ADMIN = 'admin'
         USER = 'user'
         MODERATOR = 'moderator'
@@ -25,8 +25,8 @@ class User(AbstractUser):
     role = models.CharField(
         verbose_name='User role',
         max_length=15,
-        choices=UserRole.USER_ROLE,
-        default=UserRole.USER
+        choices=Role.USER_ROLE,
+        default=Role.USER
     )
 
     class Meta:
@@ -36,12 +36,12 @@ class User(AbstractUser):
     @property
     def is_moderator(self):
         return (
-            self.UserRole.USER_ROLE == self.UserRole.MODERATOR
+            self.role == self.Role.MODERATOR
         )
 
     @property
     def is_admin(self):
         return (
-            self.UserRole.USER_ROLE == self.UserRole.ADMIN
+            self.role == self.Role.ADMIN
             or self.is_superuser
         )
