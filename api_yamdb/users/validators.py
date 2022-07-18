@@ -1,4 +1,4 @@
-from rest_framework import serializers
+from rest_framework import serializers, exceptions
 from django.contrib.auth import get_user_model
 User = get_user_model()
 
@@ -6,7 +6,7 @@ def username_is_not_me(value):
     if value == 'me':
         raise serializers.ValidationError(
             'Name *me* is not available '
-        )
+        ) 
 
 
 def username_is_unique(value):

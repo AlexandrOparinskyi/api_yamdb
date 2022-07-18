@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
-from rest_framework.validators import UniqueTogetherValidator
+from rest_framework.validators import UniqueValidator
 from .validators import username_is_not_me, username_is_unique
 
 User = get_user_model()
@@ -25,10 +25,6 @@ class UserRegistration(serializers.ModelSerializer):
         max_length=60,
         required=True,
         validators=[username_is_unique, username_is_not_me]
-    )
-    email = serializers.EmailField(
-        max_length=60,
-        required=True, 
     )
     
     class Meta:

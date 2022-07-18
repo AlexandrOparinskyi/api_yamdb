@@ -11,6 +11,7 @@ from django.contrib.auth.tokens import default_token_generator
 from rest_framework_simplejwt.tokens import AccessToken
 from django.core.mail import send_mail
 from api_yamdb.settings import EMAIL_HOST_USER
+from rest_framework.pagination import LimitOffsetPagination
 
 
 User = get_user_model()
@@ -20,6 +21,7 @@ class UsersViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = (IsAdminStaffUser, )
+    pagination_class = LimitOffsetPagination
     search_fields = ('username',)
     lookup_field = 'username'
 
@@ -73,22 +75,21 @@ def user_registration(request):
 @permission_classes((permissions.AllowAny,))
 def user_confirmation_code(request):
     serializer = UserCodeConfirm(data=request.data)
+    if 'username' in request.data:
+        user = get_object_or_404(User, username=request.data['username'])
     if not serializer.is_valid():
         return Response(
             data=serializer.errors,
             status=status.HTTP_400_BAD_REQUEST
         )
-    username = serializer.validated_data.get('username')
     confirmation_code = serializer.validated_data.get('code_confirm')
     
-    user = get_object_or_404(User, username=username)
-    
-    if not default_token_generator.check_token(user=user, token=confirmation_code):
+    if not default_token_generator.check_token(user, confirmation_code):
         return Response(
             data=serializer.errors,
-            status=status.HTTP_404_NOT_FOUND
+            status=status.HTTP_400_BAD_REQUEST
         )
-    
+        
     user.is_active = True
     user.save()
     token = AccessToken.for_user(user=user)
@@ -97,3 +98,4 @@ def user_confirmation_code(request):
         {'token': str(token)},
         status=status.HTTP_200_OK
     )
+    
