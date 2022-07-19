@@ -19,7 +19,7 @@ class ModeratorOrReadOnly(permissions.BasePermission):
         )
 
     def has_object_permission(self, request, view, obj):
-        return obj.author == request.user.is_user
+        return request.user.is_moderator
 
 
 class AuthorOrReadOnly(permissions.BasePermission):
