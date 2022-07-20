@@ -60,9 +60,3 @@ class TitlePostSerializer(serializers.ModelSerializer):
             title.genre.add(genre)
         return title
 
-    def update(self, instance, validated_data):
-        instance.name = validated_data.get('name', instance.name)
-        instance.year = validated_data.get('year', instance.year)
-        instance.category = validated_data.get('category', instance.category)
-        instance.save()
-        return instance
