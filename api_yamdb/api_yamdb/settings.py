@@ -29,7 +29,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'django_filters',
 
-    'reviews'
+    'reviews',
     'api',
     'api_yamdb',
     'users.apps.UsersConfig',
