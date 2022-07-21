@@ -1,5 +1,6 @@
-from rest_framework import serializers, exceptions
 from django.contrib.auth import get_user_model
+from rest_framework import exceptions, serializers
+
 User = get_user_model()
 
 

@@ -1,18 +1,19 @@
-from django.shortcuts import render
-from rest_framework.decorators import api_view, permission_classes
 from django.contrib.auth import get_user_model
-from rest_framework.response import Response
-from rest_framework import viewsets, permissions, status, views #filters,  serializers, 
-from .serializers import (UserSerializer, MeSerializer, UserRegistration, UserCodeConfirm)
-from .permissions import IsAdminStaffUser
-from rest_framework.decorators import action
-from django.shortcuts import get_object_or_404
 from django.contrib.auth.tokens import default_token_generator
-from rest_framework_simplejwt.tokens import AccessToken
 from django.core.mail import send_mail
-from api_yamdb.settings import EMAIL_HOST_USER
+from django.shortcuts import get_object_or_404, render
+from rest_framework import (permissions, status,  # filters,  serializers,
+                            views, viewsets)
+from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.pagination import LimitOffsetPagination
+from rest_framework.response import Response
+from rest_framework_simplejwt.tokens import AccessToken
 
+from api_yamdb.settings import EMAIL_HOST_USER
+
+from .permissions import IsAdminStaffUser
+from .serializers import (MeSerializer, UserCodeConfirm, UserRegistration,
+                          UserSerializer)
 
 User = get_user_model()
 

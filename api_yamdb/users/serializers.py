@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
+
 from .validators import username_is_not_me, username_is_unique
 
 User = get_user_model()

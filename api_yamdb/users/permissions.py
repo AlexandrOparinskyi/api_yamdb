@@ -1,7 +1,6 @@
 from rest_framework import permissions
 
 
-
 class IsAdminStaffUser(permissions.BasePermission):
     """Автор записи или администратор"""
     def has_permission(self, request, view):
