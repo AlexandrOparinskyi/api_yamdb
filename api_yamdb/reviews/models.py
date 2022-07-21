@@ -42,11 +42,6 @@ class Title(models.Model):
     year = models.IntegerField(
         'Год выпуска',
     )
-    rating = models.IntegerField(
-        default=None,
-        null=True,
-        blank=True,
-    )
     description = models.TextField(
         'Описание произведения',
         null=True,
