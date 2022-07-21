@@ -1,24 +1,24 @@
 import datetime
 from rest_framework import serializers
 
-from reviews.models import Categories, Genres, Titles, Review, Comment
+from reviews.models import Category, Genre, Title, Review, Comment
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.shortcuts import get_object_or_404
 from rest_framework.permissions import SAFE_METHODS
 
 
-class CategoriesSerializer(serializers.ModelSerializer):
+class CategorySerializer(serializers.ModelSerializer):
 
     class Meta:
         fields = ('name', 'slug',)
-        model = Categories
+        model = Category
 
 
-class GenresSerializer(serializers.ModelSerializer):
+class GenreSerializer(serializers.ModelSerializer):
 
     class Meta:
         fields = ('name', 'slug',)
-        model = Genres
+        model = Genre
 
 
 class CommentSerializer(serializers.ModelSerializer):
@@ -50,7 +50,7 @@ class ReviewSerializer(serializers.ModelSerializer):
            or self.context['request'].method == 'PATCH'):
             return data
         title_id = self.context['view'].kwargs.get('title_id')
-        title = get_object_or_404(Titles, id=title_id)
+        title = get_object_or_404(Title, id=title_id)
         reviews = self.context['request'].user.reviews
         if reviews.filter(title=title).exists():
             raise serializers.ValidationError(
@@ -63,11 +63,11 @@ class ReviewSerializer(serializers.ModelSerializer):
         fields = ('id', 'title', 'text', 'author', 'score', 'pub_date')
 
 
-class TitlesSerializer(serializers.ModelSerializer):
-    category = CategoriesSerializer(
+class TitleSerializer(serializers.ModelSerializer):
+    category = CategorySerializer(
         read_only=True
     )
-    genre = GenresSerializer(
+    genre = GenreSerializer(
         read_only=True,
         many=True,
     )
@@ -75,17 +75,17 @@ class TitlesSerializer(serializers.ModelSerializer):
     class Meta:
         fields = ('id', 'name', 'year', 'rating',
                   'description', 'genre', 'category',)
-        model = Titles
+        model = Title
 
 
 class TitlePostSerializer(serializers.ModelSerializer):
     category = serializers.SlugRelatedField(
         slug_field='slug',
-        queryset=Categories.objects.all(),
+        queryset=Category.objects.all(),
     )
     genre = serializers.SlugRelatedField(
         slug_field='slug',
-        queryset=Genres.objects.all(),
+        queryset=Genre.objects.all(),
         many=True
     )
     year = serializers.IntegerField(
@@ -95,16 +95,16 @@ class TitlePostSerializer(serializers.ModelSerializer):
     class Meta:
         fields = ('id', 'name', 'year', 'rating',
                   'description', 'genre', 'category',)
-        model = Titles
+        model = Title
 
     def to_representation(self, instance):
-        serializer = TitlesSerializer(instance)
+        serializer = TitleSerializer(instance)
         return serializer.data
 
     def create(self, validated_data):
         category = validated_data.pop('category')
         genres = validated_data.pop('genre')
-        title = Titles.objects.create(category=category, **validated_data)
+        title = Title.objects.create(category=category, **validated_data)
         for genre in genres:
             title.genre.add(genre)
         return title

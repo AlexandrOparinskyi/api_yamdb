@@ -4,7 +4,7 @@ from django.db.models.constraints import UniqueConstraint
 from users.models import User
 
 
-class Categories(models.Model):
+class Category(models.Model):
     name = models.CharField(
         'Название категории',
         max_length=256,
@@ -19,7 +19,7 @@ class Categories(models.Model):
         return self.name
 
 
-class Genres(models.Model):
+class Genre(models.Model):
     name = models.CharField(
         'Название жанра',
         max_length=256,
@@ -34,7 +34,7 @@ class Genres(models.Model):
         return self.name
 
 
-class Titles(models.Model):
+class Title(models.Model):
     name = models.CharField(
         'Название произведения',
         max_length=50,
@@ -53,10 +53,10 @@ class Titles(models.Model):
         blank=True,
     )
     genre = models.ManyToManyField(
-        Genres,
+        Genre,
     )
     category = models.ForeignKey(
-        Categories,
+        Category,
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
@@ -69,7 +69,7 @@ class Titles(models.Model):
 
 class Review(models.Model):
     title = models.ForeignKey(
-        Titles, on_delete=models.CASCADE,
+        Title, on_delete=models.CASCADE,
         related_name='reviews',
         verbose_name='Произведение'
     )
