@@ -109,4 +109,3 @@ class TitlePostSerializer(serializers.ModelSerializer):
         for genre in genres:
             title.genre.add(genre)
         return title
-

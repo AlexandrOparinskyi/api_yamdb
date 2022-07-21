@@ -4,22 +4,18 @@ from rest_framework import permissions
 class IsAdminStaffUser(permissions.BasePermission):
     """Автор записи или администратор"""
     def has_permission(self, request, view):
-        return (request.user.is_authenticated and
-                    (request.user.is_admin
-                        or request.user.is_superuser)
-                )
+        return (request.user.is_authenticated
+                and (request.user.is_admin
+                     or request.user.is_superuser))
 
 
 class IsAdminOrReadOnly(permissions.BasePermission):
     """Разрешает доступ только для администратора или только для чтения"""
     def has_permission(self, request, view):
-        return (request.method in permissions.SAFE_METHODS or (
-                    request.user.is_authenticated and (
-                        request.user.role == 'admin'
-                        or request.user.is_superuser
-                        )
-                    )
-                )
+        return (request.method in permissions.SAFE_METHODS
+                or (request.user.is_authenticated
+                    and (request.user.role == 'admin'
+                         or request.user.is_superuser)))
 
 
 class ModeratorOrReadOnly(permissions.BasePermission):
@@ -41,7 +37,7 @@ class AuthorOrReadOnly(permissions.BasePermission):
             request.method in permissions.SAFE_METHODS
             or request.user.is_authenticated
         )
-    # author == поле модели автора, заменить если по другому названо
+
 
 class AuthorModeratorOrReadOnly(permissions.BasePermission):
     def has_permission(self, request, view):

@@ -5,8 +5,7 @@ from rest_framework import filters, mixins, viewsets
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from reviews.filters import TitleFilters
 from reviews.models import Category, Genre, Review, Title
-from users.permissions import (AuthorModeratorOrReadOnly, IsAdminOrReadOnly,
-                               ModeratorOrReadOnly)
+from users.permissions import (AuthorModeratorOrReadOnly, IsAdminOrReadOnly)
 
 from .serializers import (CategorySerializer, CommentSerializer,
                           GenreSerializer, ReviewSerializer,
@@ -14,9 +13,9 @@ from .serializers import (CategorySerializer, CommentSerializer,
 
 
 class CategoryViewSet(mixins.ListModelMixin,
-                        mixins.CreateModelMixin,
-                        mixins.DestroyModelMixin,
-                        viewsets.GenericViewSet):
+                      mixins.CreateModelMixin,
+                      mixins.DestroyModelMixin,
+                      viewsets.GenericViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     filter_backends = (filters.SearchFilter,)

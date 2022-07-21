@@ -1,9 +1,8 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
-from django.shortcuts import get_object_or_404, render
-from rest_framework import (permissions, status,  # filters,  serializers,
-                            views, viewsets)
+from django.shortcuts import get_object_or_404
+from rest_framework import (permissions, status, viewsets)
 from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.response import Response
@@ -31,7 +30,7 @@ class UsersViewSet(viewsets.ModelViewSet):
         detail=False,
         url_path='me',
         url_name='me',
-        permission_classes = (
+        permission_classes=(
             permissions.IsAuthenticated,
         )
     )
@@ -60,15 +59,15 @@ def user_registration(request):
         is_active=False
     )
     confirmation_code = default_token_generator.make_token(user=new_user)
-    
+
     send_mail(
-        subject = 'Confirmation code',
-        message = f'Here is your confirmation code {confirmation_code}',
-        from_email = EMAIL_HOST_USER,
-        recipient_list = [email],
+        subject='Confirmation code',
+        message=f'Here is your confirmation code {confirmation_code}',
+        from_email=EMAIL_HOST_USER,
+        recipient_list=[email],
         fail_silently=True
     )
-    
+
     return Response(data=serializer.data, status=status.HTTP_200_OK)
 
 
@@ -84,19 +83,18 @@ def user_confirmation_code(request):
             status=status.HTTP_400_BAD_REQUEST
         )
     confirmation_code = serializer.validated_data.get('code_confirm')
-    
+
     if not default_token_generator.check_token(user, confirmation_code):
         return Response(
             data=serializer.errors,
             status=status.HTTP_400_BAD_REQUEST
         )
-        
+
     user.is_active = True
     user.save()
     token = AccessToken.for_user(user=user)
-    
+
     return Response(
         {'token': str(token)},
         status=status.HTTP_200_OK
     )
-    
