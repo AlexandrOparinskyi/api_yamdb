@@ -5,8 +5,10 @@ from rest_framework import filters, mixins, viewsets
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from reviews.filters import TitleFilters
 from reviews.models import Category, Genre, Review, Title
-from users.permissions import (AuthorModeratorOrReadOnly, IsAdminOrReadOnly,
-                               ModeratorOrReadOnly)
+from api_yamdb.permissions import (
+    AuthorOrReadOnly,
+    ModeratorOrReadOnly,
+    IsAdminOrReadOnly)
 
 from .serializers import (CategorySerializer, CommentSerializer,
                           GenreSerializer, ReviewSerializer,
@@ -14,9 +16,9 @@ from .serializers import (CategorySerializer, CommentSerializer,
 
 
 class CategoryViewSet(mixins.ListModelMixin,
-                        mixins.CreateModelMixin,
-                        mixins.DestroyModelMixin,
-                        viewsets.GenericViewSet):
+                      mixins.CreateModelMixin,
+                      mixins.DestroyModelMixin,
+                      viewsets.GenericViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     filter_backends = (filters.SearchFilter,)
@@ -54,7 +56,8 @@ class TitleViewSet(viewsets.ModelViewSet):
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
     permission_classes = (
-        IsAuthenticatedOrReadOnly, AuthorModeratorOrReadOnly
+        IsAuthenticatedOrReadOnly,
+        AuthorOrReadOnly | ModeratorOrReadOnly | IsAdminOrReadOnly
     )
 
     def get_queryset(self):
@@ -69,7 +72,8 @@ class CommentViewSet(viewsets.ModelViewSet):
 class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
     permission_classes = (
-        IsAuthenticatedOrReadOnly, AuthorModeratorOrReadOnly
+        IsAuthenticatedOrReadOnly,
+        AuthorOrReadOnly | ModeratorOrReadOnly | IsAdminOrReadOnly
     )
 
     def get_queryset(self):
