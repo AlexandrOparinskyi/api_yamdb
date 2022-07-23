@@ -1,11 +1,9 @@
 import datetime
 
-from django.core.validators import MaxValueValidator, MinValueValidator
-from django.shortcuts import get_object_or_404
+from django.core.validators import MaxValueValidator
 from rest_framework import serializers
-from rest_framework.permissions import SAFE_METHODS
-from reviews.models import Category, Comment, Genre, Review, Title
 from rest_framework.validators import UniqueTogetherValidator
+from reviews.models import Category, Comment, Genre, Review, Title
 
 
 class CategorySerializer(serializers.ModelSerializer):
