@@ -5,6 +5,7 @@ from rest_framework import filters, mixins, viewsets
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from reviews.filters import TitleFilters
 from reviews.models import Category, Genre, Review, Title
+from .mixins import GetPostDelViewSet
 
 from api_yamdb.permissions import (AuthorOrReadOnly, IsAdminOrReadOnly,
                                    ModeratorOrReadOnly)
@@ -14,10 +15,7 @@ from .serializers import (CategorySerializer, CommentSerializer,
                           TitlePostSerializer, TitleSerializer)
 
 
-class CategoryViewSet(mixins.ListModelMixin,
-                      mixins.CreateModelMixin,
-                      mixins.DestroyModelMixin,
-                      viewsets.GenericViewSet):
+class CategoryViewSet(GetPostDelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     filter_backends = (filters.SearchFilter,)
@@ -28,7 +26,7 @@ class CategoryViewSet(mixins.ListModelMixin,
         return Category.objects.get(slug=self.kwargs['pk'])
 
 
-class GenreViewSet(CategoryViewSet):
+class GenreViewSet(GetPostDelViewSet):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
     filter_backends = (filters.SearchFilter,)

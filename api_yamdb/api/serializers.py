@@ -5,6 +5,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from rest_framework.permissions import SAFE_METHODS
 from reviews.models import Category, Comment, Genre, Review, Title
+from rest_framework.validators import UniqueTogetherValidator
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -34,33 +35,41 @@ class CommentSerializer(serializers.ModelSerializer):
 
 
 class ReviewSerializer(serializers.ModelSerializer):
+    """
+    Сериализатор модели отзывов.
+    """
     author = serializers.SlugRelatedField(
-        read_only=True, slug_field='username',
         default=serializers.CurrentUserDefault(),
+        slug_field='username',
+        many=False,
+        read_only=True,
     )
-    title = serializers.SlugRelatedField(
-        read_only=True, slug_field='name',
+    title = serializers.HiddenField(
+        default=serializers.CurrentUserDefault()
     )
-    score = serializers.IntegerField(
-        validators=[MaxValueValidator(10), MinValueValidator(1)]
-    )
-
-    def validate(self, data):
-        if (self.context['request'].method in SAFE_METHODS
-           or self.context['request'].method == 'PATCH'):
-            return data
-        title_id = self.context['view'].kwargs.get('title_id')
-        title = get_object_or_404(Title, id=title_id)
-        reviews = self.context['request'].user.reviews
-        if reviews.filter(title=title).exists():
-            raise serializers.ValidationError(
-                'Вы уже оставляли отзыв на это произведение!'
-            )
-        return data
 
     class Meta:
         model = Review
-        fields = ('id', 'title', 'text', 'author', 'score', 'pub_date')
+        fields = '__all__'
+        validators = [
+            UniqueTogetherValidator(
+                queryset=Review.objects.all(),
+                fields=('author', 'title')
+            )
+        ]
+
+    def validate(self, data):
+        if self.context['request'].method != 'POST':
+            return data
+
+        title_id = self.context['view'].kwargs.get('title_id')
+        author = self.context['request'].user
+        if Review.objects.filter(
+                author=author, title=title_id).exists():
+            raise serializers.ValidationError(
+                'Только один отзыва возможен для каждого произведения.'
+            )
+        return data
 
 
 class TitleSerializer(serializers.ModelSerializer):
@@ -99,13 +108,7 @@ class TitlePostSerializer(serializers.ModelSerializer):
         model = Title
 
     def to_representation(self, instance):
-        serializer = TitleSerializer(instance)
-        return serializer.data
-
-    def create(self, validated_data):
-        category = validated_data.pop('category')
-        genres = validated_data.pop('genre')
-        title = Title.objects.create(category=category, **validated_data)
-        for genre in genres:
-            title.genre.add(genre)
-        return title
+        data = super(TitlePostSerializer, self).to_representation(instance)
+        data['category'] = CategorySerializer(instance.category).data
+        data['genre'] = GenreSerializer(instance.genre.all(), many=True).data
+        return data
