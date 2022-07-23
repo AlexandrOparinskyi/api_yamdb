@@ -38,7 +38,11 @@ class GenreViewSet(GetPostDelViewSet):
 
 
 class TitleViewSet(viewsets.ModelViewSet):
-    queryset = Title.objects.annotate(rating=Avg('reviews__score'))
+    queryset = (
+        Title.objects
+        .select_related('category')
+        .prefetch_related('genre')
+        .annotate(rating=Avg('reviews__score')))
     http_method_names = ['post', 'get', 'patch', 'delete']
     filter_backends = (DjangoFilterBackend,)
     filterset_class = TitleFilters
