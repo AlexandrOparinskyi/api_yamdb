@@ -7,7 +7,7 @@ class User(AbstractUser):
         ADMIN = 'admin'
         USER = 'user'
         MODERATOR = 'moderator'
-        
+
         USER_ROLE = (
             (ADMIN, 'Admin'),
             (USER, 'User'),

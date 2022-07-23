@@ -5,10 +5,9 @@ from rest_framework import filters, mixins, viewsets
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from reviews.filters import TitleFilters
 from reviews.models import Category, Genre, Review, Title
-from api_yamdb.permissions import (
-    AuthorOrReadOnly,
-    ModeratorOrReadOnly,
-    IsAdminOrReadOnly)
+
+from api_yamdb.permissions import (AuthorOrReadOnly, IsAdminOrReadOnly,
+                                   ModeratorOrReadOnly)
 
 from .serializers import (CategorySerializer, CommentSerializer,
                           GenreSerializer, ReviewSerializer,
