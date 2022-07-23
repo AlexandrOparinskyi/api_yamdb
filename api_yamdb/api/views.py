@@ -1,21 +1,21 @@
 from django.db.models import Avg
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import filters, mixins, viewsets
+from rest_framework import filters, viewsets
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from reviews.filters import TitleFilters
 from reviews.models import Category, Genre, Review, Title
-from users.permissions import (AuthorModeratorOrReadOnly, IsAdminOrReadOnly)
 
+from api_yamdb.permissions import (AuthorOrReadOnly, IsAdminOrReadOnly,
+                                   ModeratorOrReadOnly)
+
+from .mixins import GetPostDelViewSet
 from .serializers import (CategorySerializer, CommentSerializer,
                           GenreSerializer, ReviewSerializer,
                           TitlePostSerializer, TitleSerializer)
 
 
-class CategoryViewSet(mixins.ListModelMixin,
-                      mixins.CreateModelMixin,
-                      mixins.DestroyModelMixin,
-                      viewsets.GenericViewSet):
+class CategoryViewSet(GetPostDelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     filter_backends = (filters.SearchFilter,)
@@ -26,7 +26,7 @@ class CategoryViewSet(mixins.ListModelMixin,
         return Category.objects.get(slug=self.kwargs['pk'])
 
 
-class GenreViewSet(CategoryViewSet):
+class GenreViewSet(GetPostDelViewSet):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
     filter_backends = (filters.SearchFilter,)
@@ -53,7 +53,8 @@ class TitleViewSet(viewsets.ModelViewSet):
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
     permission_classes = (
-        IsAuthenticatedOrReadOnly, AuthorModeratorOrReadOnly
+        IsAuthenticatedOrReadOnly,
+        AuthorOrReadOnly | ModeratorOrReadOnly | IsAdminOrReadOnly
     )
 
     def get_queryset(self):
@@ -68,7 +69,8 @@ class CommentViewSet(viewsets.ModelViewSet):
 class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
     permission_classes = (
-        IsAuthenticatedOrReadOnly, AuthorModeratorOrReadOnly
+        IsAuthenticatedOrReadOnly,
+        AuthorOrReadOnly | ModeratorOrReadOnly | IsAdminOrReadOnly
     )
 
     def get_queryset(self):
