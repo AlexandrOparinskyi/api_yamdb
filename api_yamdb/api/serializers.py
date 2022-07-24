@@ -5,6 +5,8 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 from reviews.models import Category, Comment, Genre, Review, Title
 
+from .utils import CurrenTitleDefault
+
 
 class CategorySerializer(serializers.ModelSerializer):
 
@@ -43,7 +45,7 @@ class ReviewSerializer(serializers.ModelSerializer):
         read_only=True,
     )
     title = serializers.HiddenField(
-        default=serializers.CurrentUserDefault()
+        default=CurrenTitleDefault()
     )
 
     class Meta:
@@ -52,22 +54,9 @@ class ReviewSerializer(serializers.ModelSerializer):
         validators = [
             UniqueTogetherValidator(
                 queryset=Review.objects.all(),
-                fields=('author', 'title')
+                fields=['author', 'title']
             )
         ]
-
-    def validate(self, data):
-        if self.context['request'].method != 'POST':
-            return data
-
-        title_id = self.context['view'].kwargs.get('title_id')
-        author = self.context['request'].user
-        if Review.objects.filter(
-                author=author, title=title_id).exists():
-            raise serializers.ValidationError(
-                'Только один отзыва возможен для каждого произведения.'
-            )
-        return data
 
 
 class TitleSerializer(serializers.ModelSerializer):
