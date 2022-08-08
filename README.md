@@ -33,7 +33,7 @@
 1. Склонируйте данный репозиторий
 
 ```
-git clone https://github.com/Yakov-Varnaev/api_yamdb.git
+git clone https://github.com/CodeWormD/api_yamdb.git
 ```
 
 2. Перейдите в директорию api_yamdb/. Создайте и активируйте виртуальное окружение. Обновите pip.
