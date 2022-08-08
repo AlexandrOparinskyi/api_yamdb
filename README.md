@@ -76,3 +76,9 @@ Django version 2.2.16, using settings 'api_yamdb.settings'
 Starting development server at http://127.0.0.1:8000/
 Quit the server with CTRL-BREAK.
 ```
+
+6. Документация API находится по следующему адресу
+
+```
+http://127.0.0.1:8000/redoc/
+```
