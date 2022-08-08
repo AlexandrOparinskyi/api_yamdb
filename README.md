@@ -71,6 +71,3 @@ Django version 2.2.16, using settings 'api_yamdb.settings'
 Starting development server at http://127.0.0.1:8000/
 Quit the server with CTRL-BREAK.
 ```
-
-
-Мои пет [проекты](https://github.com/CodeWormD/simple_blog) 
